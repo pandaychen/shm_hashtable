@@ -11,6 +11,19 @@
 
 extern uint32_t g_uInitSign;
 
+//get the current usage
+double GetCurrentStorageRate(ShmHashManageNode *t_pShmHashManageNode){
+	if (NULL == t_pShmHashManageNode){
+		return RET_WRONG;
+	}
+	uint64_t uCur = t_pShmHashManageNode->stShmHashHeader.uCurrentSize;
+	uint64_t uTotal = t_pShmHashManageNode->uMaxTableSize;
+	
+	return double(uCur / uTotal);
+}
+
+
+
 //get pos (row,col)
 void *GetPosition(ShmHashManageNode *t_pShmHashManageNode, const uint32_t t_uRow, const uint32_t t_uCol){
 
