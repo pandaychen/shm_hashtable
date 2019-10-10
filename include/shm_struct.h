@@ -69,9 +69,12 @@ struct __shm_hash_header{
 
 typedef struct __shm_hash_header ShmHashHeader;
 
+//这是一个内存结构!
 struct __shm_hash_manage_node {
-	ShmHashHeader stShmHashHeader;
+	//ShmHashHeader stShmHashHeader;	//FIX WRITE SHM BUGS!
+	ShmHashHeader *ptrShmHashHeader; 
 	void *pMemInfo;	//pointer to actual mem
+	uint64_t uCurSize;
 	uint32_t uShmHashLines;
 	uint64_t uMemSize;	//size of the share mem
 	uint64_t uPrimerTotalTable[SHM_HASH_MAX_LINES];

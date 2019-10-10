@@ -28,6 +28,8 @@ extern "C"{
 	
 	int32_t ShmHashInit(ShmHashManageNode *t_pShmHashManageNode, ShmHashHeader *t_pShmHashHeader, uint32_t t_uShmKey, uint32_t t_uLines, const uint32_t *t_pPrimerTable);
 
+	double GetCurrentStorageRate(ShmHashManageNode *t_pShmHashManageNode);
+
 #ifdef __cplusplus
 #if __cplusplus
 }
