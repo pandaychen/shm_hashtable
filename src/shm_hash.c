@@ -16,10 +16,10 @@ double GetCurrentStorageRate(ShmHashManageNode *t_pShmHashManageNode){
 	if (NULL == t_pShmHashManageNode){
 		return RET_WRONG;
 	}
-	uint64_t uCur = t_pShmHashManageNode->stShmHashHeader.uCurrentSize;
+	uint64_t uCur = t_pShmHashManageNode->ptrShmHashHeader->uCurrentSize;
 	uint64_t uTotal = t_pShmHashManageNode->uMaxTableSize;
 	
-	return double(uCur / uTotal);
+	return (double)(uCur) / (double)(uTotal);
 }
 
 
@@ -93,8 +93,10 @@ int32_t ShmHashInert(ShmHashManageNode *t_pstShmHashManageNode,uint64_t t_uKey,u
 				pstShmHashNode->uKeySize = sizeof(uint64_t);	//get rid of '\0'
 				pstShmHashNode->uValueSize = t_uValueSize>SHM_DATA_MAX_SIZE-1?SHM_DATA_MAX_SIZE-1:t_uValueSize;
 				memcpy(pstShmHashNode->stStore, t_pValue, t_uValueSize > SHM_DATA_MAX_SIZE - 1 ? (SHM_DATA_MAX_SIZE - 1): t_uValueSize);
-				t_pstShmHashManageNode->stShmHashHeader.uCurrentSize++;
+				t_pstShmHashManageNode->ptrShmHashHeader->uCurrentSize++;
 				return HASHITEM_INSERT_SUCC;
+			}else{
+				//printf("node is used.\n");
 			}
 		}
 	}
@@ -207,7 +209,8 @@ int32_t ShmHashInit(ShmHashManageNode *t_pShmHashManageNode, ShmHashHeader *t_pS
 		pstShmHashHeader->uCurrentSize = 0;
 		pstShmHashHeader->uStatus = HASH_STATUS_NORMAL;
 		pstShmHashHeader->uReserver1 = pstShmHashHeader->uReserver2 = 0;
-
+	
+		t_pShmHashManageNode->ptrShmHashHeader = pstShmHashHeader;	//fix header write bugs!!
 		t_pShmHashManageNode->pMemInfo = (void *)pMem;
 		t_pShmHashManageNode->uMaxTableSize = uMaxSize;
 		t_pShmHashManageNode->uMemSize = uShareMemTotalSize;
@@ -218,9 +221,11 @@ int32_t ShmHashInit(ShmHashManageNode *t_pShmHashManageNode, ShmHashHeader *t_pS
 	}
 	else{
 		//attach succ
-        ShmHashHeader *pstShmHashHeader;
+        	ShmHashHeader *pstShmHashHeader= NULL;
 		pstShmHashHeader = (ShmHashHeader *)(uint64_t)pMem;
+		printf("attach-current size=%d\n",pstShmHashHeader->uCurrentSize);
 
+		t_pShmHashManageNode->ptrShmHashHeader  = pstShmHashHeader;	//fix shm write bugs!
 		t_pShmHashManageNode->pMemInfo = (void *)pMem;
 		t_pShmHashManageNode->uMaxTableSize = uMaxSize;
 		t_pShmHashManageNode->uMemSize = uShareMemTotalSize;
